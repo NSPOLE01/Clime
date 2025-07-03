@@ -17,6 +17,7 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchField: UITextField!
     
+
     var weatherManager = WeatherManager()
     let locationManager = CLLocationManager()
     
@@ -29,6 +30,10 @@ class WeatherViewController: UIViewController {
         
         weatherManager.delegate = self
         searchField.delegate = self
+    }
+    
+    @IBAction func locationPressed(_ sender: UIButton) {
+        locationManager.requestLocation()
     }
 }
 
@@ -81,7 +86,12 @@ extension WeatherViewController: WeatherManagerDelegate{
 
 extension WeatherViewController: CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print("Got Location")
+        if let location = locations.last{
+            locationManager.stopUpdatingLocation()
+            let lat = location.coordinate.latitude
+            let long = location.coordinate.longitude
+            weatherManager.fetchWeather(longitude:long, latitude: lat)
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
